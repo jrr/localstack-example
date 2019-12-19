@@ -3,18 +3,19 @@ version: 2.1
 jobs:
   docker-job:
     docker:
-      - image: debian:stretch
+      - image: circleci/node:12
+      # - image: debian:stretch
 
     steps:
       - checkout
 
       - run:
-          name: Greeting
-          command: echo Hello, world.
-
-      - run:
-          name: Print the Current Time
-          command: date
+          name: docker commands
+          command: |
+            docker --version
+            docker-compose --version
+            docker run circleci/node:12 cat /etc/os-release
+            docker run alpine cat /etc/alpine-release
 
   machine-job:
     machine:
@@ -24,12 +25,12 @@ jobs:
       - checkout
 
       - run:
-          name: Greeting
-          command: echo Hello, world.
-
-      - run:
-          name: Print the Current Time
-          command: date
+          name: docker commands
+          command: |
+            docker --version
+            docker-compose --version
+            docker run circleci/node:12 cat /etc/os-release
+            docker run alpine cat /etc/alpine-release
 
 workflows:
   version: 2
