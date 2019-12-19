@@ -1,6 +1,7 @@
-version: 2
+version: 2.1
+
 jobs:
-  build:
+  docker-job:
     docker:
       - image: debian:stretch
 
@@ -14,3 +15,25 @@ jobs:
       - run:
           name: Print the Current Time
           command: date
+
+  machine-job:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    steps:
+      - checkout
+
+      - run:
+          name: Greeting
+          command: echo Hello, world.
+
+      - run:
+          name: Print the Current Time
+          command: date
+
+workflows:
+  version: 2
+  jobs:
+    jobs:
+      - docker-job
+      - machine-job
