@@ -1,20 +1,20 @@
-while $(docker ps -q); do
-  echo 'waiting for container to start..'
-  sleep 1
-done
+# while $(docker ps -q); do
+#   echo 'waiting for container to start..'
+#   sleep 1
+# done
 
 echo "waiting for S3.."
-until $(nc -zv localstack 4572); do
+until $(nc -zv localhost 4572); do
     printf '.'
     sleep 1
 done
 echo "waiting for IAM.."
-until $(nc -zv localstack 4593); do
+until $(nc -zv localhost 4593); do
     printf '.'
     sleep 1
 done
 echo "waiting for Lambda.."
-until $(nc -zv localstack 4574); do
+until $(nc -zv localhost 4574); do
     printf '.'
     sleep 1
 done
