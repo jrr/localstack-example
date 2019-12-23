@@ -1,21 +1,26 @@
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@0.1.16
+
 jobs:
   docker-job:
     docker:
       - image: circleci/node:12
+      - image: localstack/localstack
       # - image: debian:stretch
 
     steps:
       - checkout
 
+      - aws-cli/install
+
+      - aws-cli/setup
+
       - run:
-          name: docker commands
+          name: aws stuff
           command: |
-            docker --version
-            docker-compose --version
-            docker run circleci/node:12 cat /etc/os-release
-            docker run alpine cat /etc/alpine-release
+            aws --version
 
   machine-job:
     machine:
@@ -23,6 +28,15 @@ jobs:
 
     steps:
       - checkout
+
+      - aws-cli/install
+
+      - aws-cli/setup
+
+      - run:
+          name: aws stuff
+          command: |
+            aws --version
 
       - run:
           name: docker commands
