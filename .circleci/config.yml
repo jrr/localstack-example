@@ -40,6 +40,12 @@ jobs:
             terraform init -input=false
             terraform apply -auto-approve -input=false
 
+      - run:
+          name: lambda
+          command: |
+            aws --endpoint-url=http://localhost:4574 lambda list-functions
+            aws --endpoint-url=http://localhost:4574 lambda invoke --function-name ExampleLambda /dev/stdout
+
   machine-job:
     machine:
       image: ubuntu-1604:201903-01
@@ -68,11 +74,9 @@ jobs:
 
       - run:
           name: Wait for localstack
-          command: ./wait-for-localstack-ports.sh
-
-      - run:
-          name: Wait for localstack
-          command: ./wait-for-localstack-ready.sh
+          command: |
+            ./wait-for-localstack-ports.sh
+            ./wait-for-localstack-ready.sh
 
       - run:
           name: aws stuff
@@ -86,6 +90,12 @@ jobs:
           command: |
             terraform init -input=false
             terraform apply -auto-approve -input=false
+
+      - run:
+          name: lambda
+          command: |
+            aws --endpoint-url=http://localhost:4574 lambda list-functions
+            aws --endpoint-url=http://localhost:4574 lambda invoke --function-name ExampleLambda /dev/stdout
 
 commands:
   install_terraform:
