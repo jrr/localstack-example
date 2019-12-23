@@ -7,7 +7,7 @@ jobs:
   docker-job:
     docker:
       - image: circleci/node:12
-      - image: localstack/localstack:10.5
+      - image: localstack/localstack:0.10.5
       # - image: debian:stretch
 
     environment:
@@ -21,6 +21,10 @@ jobs:
       - aws-cli/install
 
       - aws-cli/setup
+
+      - run:
+          name: Wait for localstack
+          command: ./wait-for-localstack.sh
 
       - run:
           name: aws stuff
@@ -51,6 +55,10 @@ jobs:
       - aws-cli/install
 
       - aws-cli/setup
+
+      - run:
+          name: Wait for localstack
+          command: ./wait-for-localstack.sh
 
       - run:
           name: aws stuff
