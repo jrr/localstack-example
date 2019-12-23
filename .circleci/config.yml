@@ -1,35 +1,75 @@
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@0.1.16
+
 jobs:
   docker-job:
     docker:
-      - image: debian:stretch
+      - image: circleci/node:12
+      - image: localstack/localstack:0.10.5
+
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_SECRET_ACCESS_KEY: foo
+      AWS_ACCESS_KEY_ID: bar
 
     steps:
       - checkout
 
-      - run:
-          name: Greeting
-          command: echo Hello, world.
+      - aws-cli/install
+
+      - aws-cli/setup
 
       - run:
-          name: Print the Current Time
-          command: date
+          name: Wait for localstack
+          command: ./wait-for-localstack-ports.sh
+
+      - run:
+          name: aws stuff
+          command: |
+            aws --version
+            aws --endpoint-url=http://localhost:4572 s3 mb s3://local-bucket
+            aws --endpoint-url=http://localhost:4572 s3 ls
 
   machine-job:
     machine:
       image: ubuntu-1604:201903-01
 
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_SECRET_ACCESS_KEY: foo
+      AWS_ACCESS_KEY_ID: bar
+
     steps:
       - checkout
 
       - run:
-          name: Greeting
-          command: echo Hello, world.
+          name: docker-compose up
+          command: docker-compose up
+          background: true
+          environment:
+            TMPDIR: ~/localstack
+            DEBUG: 1
+
+      - aws-cli/install
+
+      - aws-cli/setup
 
       - run:
-          name: Print the Current Time
-          command: date
+          name: Wait for localstack
+          command: ./wait-for-localstack-ports.sh
+
+      - run:
+          name: Wait for localstack
+          command: ./wait-for-localstack-ready.sh
+
+      - run:
+          name: aws stuff
+          command: |
+            aws --version
+            aws --endpoint-url=http://localhost:4572 s3 mb s3://local-bucket
+            aws --endpoint-url=http://localhost:4572 s3 ls
 
 workflows:
   version: 2
