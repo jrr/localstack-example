@@ -8,7 +8,6 @@ jobs:
     docker:
       - image: circleci/node:12
       - image: localstack/localstack:0.10.5
-      # - image: debian:stretch
 
     environment:
       AWS_DEFAULT_REGION: us-east-1
@@ -71,14 +70,6 @@ jobs:
             aws --version
             aws --endpoint-url=http://localhost:4572 s3 mb s3://local-bucket
             aws --endpoint-url=http://localhost:4572 s3 ls
-
-      - run:
-          name: docker commands
-          command: |
-            docker --version
-            docker-compose --version
-            docker run circleci/node:12 cat /etc/os-release
-            docker run alpine cat /etc/alpine-release
 
 workflows:
   version: 2
