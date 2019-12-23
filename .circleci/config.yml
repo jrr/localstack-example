@@ -7,7 +7,7 @@ jobs:
   docker-job:
     docker:
       - image: circleci/node:12
-      - image: localstack/localstack
+      - image: localstack/localstack:10.5
       # - image: debian:stretch
 
     environment:
@@ -26,6 +26,7 @@ jobs:
           name: aws stuff
           command: |
             aws --version
+            aws --endpoint-url=http://localhost:4572 s3 ls
 
   machine-job:
     machine:
@@ -39,6 +40,14 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: docker-compose up
+          command: docker-compose up
+          background: true
+          environment:
+            TMPDIR: ~/localstack
+            DEBUG: 1
+
       - aws-cli/install
 
       - aws-cli/setup
@@ -47,6 +56,7 @@ jobs:
           name: aws stuff
           command: |
             aws --version
+            aws --endpoint-url=http://localhost:4572 s3 ls
 
       - run:
           name: docker commands
