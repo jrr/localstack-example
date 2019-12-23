@@ -24,12 +24,13 @@ jobs:
 
       - run:
           name: Wait for localstack
-          command: ./wait-for-localstack.sh
+          command: ./wait-for-localstack-ports.sh
 
       - run:
           name: aws stuff
           command: |
             aws --version
+            aws --endpoint-url=http://localhost:4572 s3 mb s3://local-bucket
             aws --endpoint-url=http://localhost:4572 s3 ls
 
   machine-job:
@@ -58,12 +59,13 @@ jobs:
 
       - run:
           name: Wait for localstack
-          command: ./wait-for-localstack.sh
+          command: ./wait-for-localstack-ready.sh
 
       - run:
           name: aws stuff
           command: |
             aws --version
+            aws --endpoint-url=http://localhost:4572 s3 mb s3://local-bucket
             aws --endpoint-url=http://localhost:4572 s3 ls
 
       - run:
