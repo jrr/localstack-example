@@ -11,7 +11,6 @@ jobs:
         environment:
           DEBUG: 1
           SERVICES: s3,iam,lambda
-          LAMBDA_EXECUTOR: docker-reuse
 
     environment:
       AWS_DEFAULT_REGION: us-east-1
@@ -50,8 +49,8 @@ jobs:
           name: lambda
           command: |
             aws --endpoint-url=http://localhost:4574 lambda list-functions
-            aws --endpoint-url=http://localhost:4574 lambda invoke --function-name ExampleLambda /dev/stdout
-          # localstack.services.awslambda.lambda_api.ClientError: Unable to find executor for Lambda function "ExampleLambda". Note that Node.js, Golang, and .Net Core Lambdas currently require LAMBDA_EXECUTOR=docker
+          # *invoking* the lambda requires configuring LocalStack with LAMBDA_EXECUTOR=docker ,
+          # which runs as docker-in-docker and doesn't work trivially on Circle.
 
   machine-job:
     machine:
@@ -80,12 +79,11 @@ jobs:
       - install_terraform
 
       - run:
-          name: Wait for localstack ports
-          command: ./wait-for-localstack-ports.sh
-
-      - run:
-          name: Wait for localstack ready
-          command: ./wait-for-localstack-ready.sh
+          name: Wait for localstack
+          command: |
+            ./wait-for-localstack-ports.sh
+            sleep 2
+            ./wait-for-localstack-ready.sh
 
       - run:
           name: aws stuff
