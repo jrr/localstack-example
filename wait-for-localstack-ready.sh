@@ -1,4 +1,11 @@
 CONTAINER=$(docker ps -q)
+
+if [ -z $CONTAINER ]; then
+    echo "Couldn't find running Docker container."
+    docker --version
+    exit 1
+fi
+
 echo "waiting for Localstack to report 'Ready.' from container $CONTAINER"
 
 while true; do
