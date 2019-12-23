@@ -21,6 +21,8 @@ jobs:
 
       - aws-cli/setup
 
+      - install_terraform
+
       - run:
           name: Wait for localstack
           command: ./wait-for-localstack-ports.sh
@@ -31,6 +33,12 @@ jobs:
             aws --version
             aws --endpoint-url=http://localhost:4572 s3 mb s3://local-bucket
             aws --endpoint-url=http://localhost:4572 s3 ls
+
+      - run:
+          name: terraform
+          command: |
+            terraform init -input=false
+            terraform apply -auto-approve -input=false
 
   machine-job:
     machine:
@@ -56,6 +64,8 @@ jobs:
 
       - aws-cli/setup
 
+      - install_terraform
+
       - run:
           name: Wait for localstack
           command: ./wait-for-localstack-ports.sh
@@ -70,6 +80,28 @@ jobs:
             aws --version
             aws --endpoint-url=http://localhost:4572 s3 mb s3://local-bucket
             aws --endpoint-url=http://localhost:4572 s3 ls
+
+      - run:
+          name: terraform
+          command: |
+            terraform init -input=false
+            terraform apply -auto-approve -input=false
+
+commands:
+  install_terraform:
+    description: "install terraform"
+    steps:
+      - run:
+          name: Install Terraform
+          environment:
+            TF_VERSION: 0.12.18
+          command: |
+            mkdir -p ~/bin
+            cd ~/bin
+            wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+            unzip terraform_${TF_VERSION}_linux_amd64.zip
+            echo 'export PATH=~/bin:$PATH'  >> $BASH_ENV
+            terraform --version
 
 workflows:
   version: 2
