@@ -59,6 +59,10 @@ jobs:
 
       - run:
           name: Wait for localstack
+          command: ./wait-for-localstack-ports.sh
+
+      - run:
+          name: Wait for localstack
           command: ./wait-for-localstack-ready.sh
 
       - run:
