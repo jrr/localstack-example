@@ -11,6 +11,7 @@ jobs:
         # will this apply to localstack, or just node?:
         environment:
           DEBUG: 1
+          SERVICES: s3,iam,lambda
 
     environment:
       AWS_DEFAULT_REGION: us-east-1
