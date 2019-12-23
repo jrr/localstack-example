@@ -10,6 +10,11 @@ jobs:
       - image: localstack/localstack
       # - image: debian:stretch
 
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_SECRET_ACCESS_KEY: foo
+      AWS_ACCESS_KEY_ID: bar
+
     steps:
       - checkout
 
@@ -25,6 +30,11 @@ jobs:
   machine-job:
     machine:
       image: ubuntu-1604:201903-01
+
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_SECRET_ACCESS_KEY: foo
+      AWS_ACCESS_KEY_ID: bar
 
     steps:
       - checkout
