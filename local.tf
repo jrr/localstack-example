@@ -33,7 +33,7 @@ resource "aws_s3_bucket" "data_bucket" {
 
 resource "aws_lambda_function" "example" {
   function_name = "ExampleLambda"
-  description   = "List bucket"
+  description   = "hello world"
   runtime       = "nodejs10.x"
   handler       = "index.handler"
 
@@ -42,7 +42,7 @@ resource "aws_lambda_function" "example" {
 
   environment {
     variables = {
-      DATA_BUCKET        = aws_s3_bucket.data_bucket.bucket,
+      DATA_BUCKET = aws_s3_bucket.data_bucket.bucket,
     }
   }
 }
