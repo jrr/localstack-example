@@ -3,6 +3,7 @@ CONTAINER=$(docker ps -q)
 if [ -z $CONTAINER ]; then
     echo "Couldn't find running Docker container."
     docker --version
+    docker ps
     exit 1
 fi
 

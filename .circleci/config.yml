@@ -8,6 +8,9 @@ jobs:
     docker:
       - image: circleci/node:12
       - image: localstack/localstack:0.10.5
+        environment:
+          DEBUG: 1
+          SERVICES: s3,iam,lambda
 
     environment:
       AWS_DEFAULT_REGION: us-east-1
@@ -21,8 +24,12 @@ jobs:
 
       - aws-cli/setup
 
+      - install_terraform
+
+      - run: env
+
       - run:
-          name: Wait for localstack
+          name: Wait for localstack ports
           command: ./wait-for-localstack-ports.sh
 
       - run:
@@ -31,6 +38,19 @@ jobs:
             aws --version
             aws --endpoint-url=http://localhost:4572 s3 mb s3://local-bucket
             aws --endpoint-url=http://localhost:4572 s3 ls
+
+      - run:
+          name: terraform
+          command: |
+            terraform init -input=false
+            terraform apply -auto-approve -input=false
+
+      - run:
+          name: lambda
+          command: |
+            aws --endpoint-url=http://localhost:4574 lambda list-functions
+          # *invoking* the lambda requires configuring LocalStack with LAMBDA_EXECUTOR=docker ,
+          # which runs docker-in-docker and doesn't work trivially in Circle.
 
   machine-job:
     machine:
@@ -56,13 +76,14 @@ jobs:
 
       - aws-cli/setup
 
-      - run:
-          name: Wait for localstack
-          command: ./wait-for-localstack-ports.sh
+      - install_terraform
 
       - run:
           name: Wait for localstack
-          command: ./wait-for-localstack-ready.sh
+          command: |
+            ./wait-for-localstack-ports.sh
+            sleep 2
+            ./wait-for-localstack-ready.sh
 
       - run:
           name: aws stuff
@@ -70,6 +91,34 @@ jobs:
             aws --version
             aws --endpoint-url=http://localhost:4572 s3 mb s3://local-bucket
             aws --endpoint-url=http://localhost:4572 s3 ls
+
+      - run:
+          name: terraform
+          command: |
+            terraform init -input=false
+            terraform apply -auto-approve -input=false
+
+      - run:
+          name: lambda
+          command: |
+            aws --endpoint-url=http://localhost:4574 lambda list-functions
+            aws --endpoint-url=http://localhost:4574 lambda invoke --function-name ExampleLambda /dev/stdout
+
+commands:
+  install_terraform:
+    description: "install terraform"
+    steps:
+      - run:
+          name: Install Terraform
+          environment:
+            TF_VERSION: 0.12.18
+          command: |
+            mkdir -p ~/bin
+            cd ~/bin
+            wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+            unzip terraform_${TF_VERSION}_linux_amd64.zip
+            echo 'export PATH=~/bin:$PATH'  >> $BASH_ENV
+            terraform --version
 
 workflows:
   version: 2
