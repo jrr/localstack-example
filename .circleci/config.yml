@@ -50,7 +50,7 @@ jobs:
           command: |
             aws --endpoint-url=http://localhost:4574 lambda list-functions
           # *invoking* the lambda requires configuring LocalStack with LAMBDA_EXECUTOR=docker ,
-          # which runs as docker-in-docker and doesn't work trivially on Circle.
+          # which runs docker-in-docker and doesn't work trivially in Circle.
 
   machine-job:
     machine:
